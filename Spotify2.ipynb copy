@@ -1,0 +1,313 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "TRZZZZD128F4236844\n"
+     ]
+    }
+   ],
+   "source": [
+    "import numpy as np\n",
+    "\n",
+    "#TID,MXMID,idx:cnt,idx:cnt,..\n",
+    "#MSD ID to lyrics\n",
+    "id_to_words=dict()  \n",
+    "#5000 most popular words\n",
+    "words_list=list()\n",
+    "#MSD ID to Musixmatch ID\n",
+    "id_to_musixmatch=dict()\n",
+    "track_set=set()\n",
+    "\n",
+    "f = open('mxm_lyrics_test.txt', 'r')\n",
+    "for line in f.xreadlines():\n",
+    "    if line[0] == '#':\n",
+    "        continue\n",
+    "    if line[0] == '%':\n",
+    "        words_list=line.split(',')\n",
+    "    else:\n",
+    "        line=line[:len(line)-1] # Remove newline char\n",
+    "        words=line.split(',')\n",
+    "        id_to_words[words[0]] = words[2:]\n",
+    "        id_to_musixmatch[words[0]] = words[1]\n",
+    "        track_set.add(words[0])\n",
+    "f.close()\n",
+    "print words[0]\n",
+    "f = open('mxm_lyrics_train.txt', 'r')\n",
+    "for line in f.xreadlines():\n",
+    "    if line[0] == '#' or line[0] == '%':\n",
+    "        continue\n",
+    "    else:\n",
+    "        line=line[:len(line)-1]\n",
+    "        words=line.split(',')\n",
+    "        id_to_words[words[0]] = words[2:]\n",
+    "        id_to_musixmatch[words[0]] = words[1]\n",
+    "        track_set.add(words[0])\n",
+    "f.close()\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "5000 237662 237662\n",
+      "TRZZZYX128F92D32C6 <type 'str'> \n",
+      "\n",
+      "['1:4', '2:18', '4:3', '5:6', '6:9', '7:1', '8:5', '9:1', '10:12', '11:2', '12:9', '13:5', '15:4', '17:2', '18:4', '19:4', '21:2', '22:3', '25:3', '29:2', '30:3', '32:5', '34:3', '35:2', '37:2', '39:3', '43:2', '44:7', '45:2', '49:2', '50:2', '52:8', '54:2', '56:1', '59:1', '63:10', '64:1', '66:1', '71:2', '72:1', '78:1', '79:1', '84:2', '91:1', '92:2', '95:1', '96:1', '103:1', '110:1', '115:1', '127:1', '134:4', '135:2', '136:3', '137:1', '138:2', '140:1', '146:2', '150:1', '152:1', '192:1', '206:1', '207:1', '222:3', '239:1', '248:2', '258:1', '270:1', '274:1', '283:1', '294:2', '300:1', '305:1', '318:1', '337:1', '338:1', '346:1', '347:1', '349:1', '371:1', '398:1', '406:1', '445:1', '451:1', '459:1', '478:1', '487:1', '492:1', '502:3', '516:1', '539:1', '548:2', '549:1', '553:1', '592:2', '617:1', '633:1', '666:1', '681:1', '727:1', '774:1', '775:7', '789:1', '811:1', '844:1', '915:1', '942:1', '950:1', '979:1', '1008:1', '1040:1', '1080:9', '1142:1', '1232:1', '1366:1', '1409:1', '1412:1', '1537:1', '1545:1', '1597:1', '1841:2', '1861:1', '1901:1', '1907:1', '2063:1', '2097:1', '2167:1', '2198:1', '2221:1', '2468:1', '2498:1', '2595:1', '2698:1', '2975:1', '2990:1', '2996:1', '3256:1', '3267:1', '3316:2', '3355:1', '4198:1', '4356:1', '4738:1', '4845:1'] \n",
+      "\n",
+      "['1:13', '2:12', '3:4', '4:3', '5:2', '6:7', '7:2', '8:3', '9:7', '10:3', '11:5', '12:7', '13:5', '15:2', '16:7', '17:3', '18:1', '21:2', '23:2', '26:1', '28:1', '29:3', '31:2', '34:2', '35:1', '45:1', '46:1', '50:1', '51:1', '53:1', '54:2', '79:2', '80:5', '84:2', '93:1', '103:2', '116:4', '129:1', '133:1', '139:1', '144:2', '163:3', '167:2', '187:1', '188:5', '193:1', '196:1', '199:1', '211:1', '220:3', '237:1', '239:1', '249:1', '279:2', '284:1', '290:1', '340:3', '394:1', '407:1', '594:1', '631:1', '649:1', '680:1', '749:1', '756:4', '759:1', '840:1', '864:1', '877:1', '929:1', '954:1', '971:1', '1036:1', '1040:1', '1085:1', '1287:1', '1478:1', '1564:1', '1588:1', '1706:1', '1794:1', '2010:1', '2094:1', '2759:1', '2765:1', '2807:1', '3994:1']\n"
+     ]
+    }
+   ],
+   "source": [
+    "print len(words_list),len(id_to_words),len(track_set)\n",
+    "print words[0], type(words[0]), '\\n'\n",
+    "print id_to_words['TRZZZYX128F92D32C6'],'\\n'\n",
+    "print id_to_words['TRZZZZD128F4236844']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "TRAAAAV128F421A322\n"
+     ]
+    }
+   ],
+   "source": [
+    "id_to_meta=dict()\n",
+    "# SongNumber,SongID,AlbumID,AlbumName,ArtistID,ArtistName,Danceability,\n",
+    "# Duration,KeySignature,Tempo,TimeSignature,Title,Year,ArtistFamiliarity,\n",
+    "# ArtistHotness,Hotness,energy,Loudness,mode,trackID\n",
+    "q=0\n",
+    "f = open('SongTXT.txt', 'r')\n",
+    "for line in f.xreadlines():\n",
+    "    line=line[:len(line)-1]\n",
+    "    meta=line.split(\",\")\n",
+    "    last=len(meta)-1\n",
+    "    if meta[last] in track_set:\n",
+    "        if q==0:\n",
+    "            print meta[last]\n",
+    "            q+=1\n",
+    "        id_to_meta[meta[last]] = meta[:last]      \n",
+    "f.close()\n",
+    "value_to_index={'songnumber':0,'songid':1,'albumid':2,'albumname':3,'artistid':4,'artistname':5,\n",
+    "                'danceability':6,'duration':7,'keysignature':8,'Tempo':9,'timesignature':10,\n",
+    "                'title':11,'year':12,'artistfamiliarity':13,'artisthotness':14,'hotness':15,\n",
+    "                'energy':16,'loudness':17,'mode':18,'trackid':19}"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "228568\n",
+      "['2', '\"SOQPWCR12A6D4FB2A3\"', '226813', '\"Cognicide\"', '\"AR73AIO1187B9AD57B\"', '\"Western Addiction\"', '0.0', '118.07302', '7', '125.475', '4', '\"A Poor Recipe For Civic Cohesion\"', '2005', '0.67175520534', '0.386606364066', '0.481694146614', '0.0', '-7.24', '1']\n",
+      "118.07302\n"
+     ]
+    }
+   ],
+   "source": [
+    "print len(id_to_meta)\n",
+    "print id_to_meta['TRAAAAV128F421A322']\n",
+    "print id_to_meta['TRAAAAV128F421A322'][value_to_index['duration']]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 31,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['TRQODPB128F934C699',\n",
+       " 'TRNBNSF128F428DAF0',\n",
+       " 'TRBDOPE128F422C1EB',\n",
+       " 'TROPSUR128E0789916',\n",
+       " 'TRQECKI128F92FEEDF']"
+      ]
+     },
+     "execution_count": 31,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "track_list=list(track_set)\n",
+    "track_list[:5]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [
+    {
+     "ename": "KeyboardInterrupt",
+     "evalue": "",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mKeyboardInterrupt\u001b[0m                         Traceback (most recent call last)",
+      "\u001b[0;32m<ipython-input-24-52882d04c962>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m()\u001b[0m\n\u001b[1;32m      4\u001b[0m     \u001b[0;32mfor\u001b[0m \u001b[0mword\u001b[0m \u001b[0;32min\u001b[0m \u001b[0mwords\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      5\u001b[0m         \u001b[0mw\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0mf\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mword\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0msplit\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m':'\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 6\u001b[0;31m         \u001b[0minverted_index\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0mint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mw\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m-\u001b[0m\u001b[0;36m1\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m+=\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtrack_list\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mindex\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtrack\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0mf\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[0;31mKeyboardInterrupt\u001b[0m: "
+     ]
+    }
+   ],
+   "source": [
+    "inverted_index=[list()]*5000\n",
+    "for track in track_list:\n",
+    "    words=id_to_words[track]\n",
+    "    for word in words:\n",
+    "        w,f = word.split(':')\n",
+    "        inverted_index[int(w)-1]+=(track_list.index(track),f)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 29,
+   "metadata": {
+    "collapsed": false
+   },
+   "outputs": [],
+   "source": [
+    "stem_word=dict()\n",
+    "f = open('mxm_reverse_mapping.txt', 'r')\n",
+    "for line in f.xreadlines():\n",
+    "    stem,unstem=line.split('<SEP>')\n",
+    "    stem_word[unstem]=stem"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "tf = np.zeros(shape = (len(track_list), len(words_list)))\n",
+    "\n",
+    "for k in id_to_words:\n",
+    "    #v = ['1: 4', '4: 5'] \n",
+    "    for entry in id_to_words[k]:\n",
+    "        info = entry.split(\":\") #'['1', '4']\n",
+    "        tf[track_list.index(k),int(info[0])-1] = float(info[1])\n",
+    "            \n",
+    "tf = np.append(np.ones(len(id_to_words.keys()),1),tf,axis=1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": [
+    "'''\n",
+    "id_to_meta (dict)\n",
+    "    key = TrackID \n",
+    "    value = SongNumber,SongID,AlbumID,AlbumName,ArtistID,ArtistName,Danceability,\n",
+    "            Duration,KeySignature,Tempo,TimeSignature,Title,Year,ArtistFamiliarity,\n",
+    "            ArtistHotness,Hotness,energy,Loudness,mode,trackID\n",
+    "            \n",
+    "value_to_index (dict)\n",
+    "    key = SongNumber,SongID,AlbumID,AlbumName,ArtistID,ArtistName,Danceability,\n",
+    "            Duration,KeySignature,Tempo,TimeSignature,Title,Year,ArtistFamiliarity,\n",
+    "            ArtistHotness,Hotness,energy,Loudness,mode,trackID\n",
+    "    value = 0,1,2,...,19\n",
+    "    \n",
+    "track_set (set)\n",
+    "    set of all TrackIDs\n",
+    "    \n",
+    "id_to_words (dict)\n",
+    "    key = TrackID\n",
+    "    value = list of 'word_number:term_frequency' strings [do w,f=id_to_words[key].split(':')]\n",
+    "    \n",
+    "words_list (ordered)\n",
+    "    list of 5000 most popular words in order (word_list[0] is most popular, [2] is second, etc.)\n",
+    "    \n",
+    "track_list (ordered_list)\n",
+    "    arbitrary ordered list of TrackIDs\n",
+    "    \n",
+    "stem_word (dict)\n",
+    "    key = word\n",
+    "    value = stemmed word\n",
+    "    \n",
+    "inverted_index (list of lists)\n",
+    "    row# = word# (1-5000)\n",
+    "    row value = (document,term_frequency) tuples\n",
+    "    \n",
+    "sparse_matrix (array)\n",
+    "    row# = track\n",
+    "    column# = \n",
+    "'''"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 2",
+   "language": "python",
+   "name": "python2"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 2
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython2",
+   "version": "2.7.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 0
+}
